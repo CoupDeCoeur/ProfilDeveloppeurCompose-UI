@@ -4,22 +4,52 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.profildeveloppeurcompose.data.DeveloperProfile
+import com.example.profildeveloppeurcompose.data.Project
+import com.example.profildeveloppeurcompose.data.Skill
+import com.example.profildeveloppeurcompose.data.sampleAndroidJuniorProfile
 import com.example.profildeveloppeurcompose.ui.theme.ProfilDeveloppeurComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +59,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProfilDeveloppeurComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProfileMainScreen(
+                    ProfileScreen(
+                        profile = sampleAndroidJuniorProfile(),
+                        onContactClick = {
+                            // Plus tard : ouvrir l'application email
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -38,176 +72,99 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 1. Écran principal
 @Composable
-fun ProfileMainScreen(modifier: Modifier = Modifier) {
-    Surface(
+fun ProfileScreen(
+    profile: DeveloperProfile,
+    onContactClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        DeveloperProfileCard(
-            name = "Thomas Bernard",
-            role = "Développeur Android junior",
-            description = "Je cherche un stage pour progresser en Kotlin, Compose et développement mobile Android.",
-            skills = listOf("• Kotlin", "• Compose", "• Git", "• Android Studio"),
-            contact = "Contact : thomas.bernard@example.com",
-            availability = "Disponible pour un stage",
-            actionText = "Contacter",
-            onCardClick = {},
-            onActionClick = {},
-            modifier = Modifier.fillMaxWidth()
-        )
+        item {
+            ProfileHeader(
+                name = profile.name,
+                role = profile.role,
+                location = profile.location
+            )
+        }
     }
 }
 
-// 2. La carte de profil globale
 @Composable
-fun DeveloperProfileCard(
+fun SectionTitle(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ProfileHeader(
     name: String,
     role: String,
-    description: String,
-    skills: List<String>,
-    contact: String,
-    availability: String,
-    actionText: String,
-    onCardClick: () -> Unit,
-    onActionClick: () -> Unit,
+    location: String,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier
-            .clickable(
-                role = Role.Button,
-                onClick = onCardClick
-            )
-            .semantics {
-                contentDescription = "Profil de $name, $role"
-            },
-        shadowElevation = 4.dp
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
     ) {
         Column(
-            modifier = Modifier.padding(16.dp) // Padding interne de la carte
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProfileHeader(
-                name = name,
-                role = role,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            ProfileDescription(
-                text = description,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            ProfileSkillsSection(
-                skills = skills,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            ProfileContactInfo(
-                contact = contact,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            ProfileAvailabilityBox(
-                availability = availability,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            ProfileActionButton(
-                text = actionText,
-                onClick = onActionClick,
-                modifier = Modifier.fillMaxWidth()
-            )
+            ProfileAvatar()
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = name, style = MaterialTheme.typography.headlineSmall)
+            Text(text = role, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = location, style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }
-
-// 3. Composables unitaires réutilisables
 @Composable
-fun ProfileHeader(name: String, role: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(text = name)
-        Text(text = role)
-    }
-}
-
-@Composable
-fun ProfileDescription(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, modifier = modifier)
-}
-
-@Composable
-fun ProfileSkillsSection(skills: List<String>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(text = "Compétences")
-        for (skill in skills) {
-            Text(text = skill)
-        }
-    }
-}
-
-@Composable
-fun ProfileContactInfo(contact: String, modifier: Modifier = Modifier) {
-    Text(text = contact, modifier = modifier)
-}
-
-@Composable
-fun ProfileAvailabilityBox(availability: String, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = availability,
-            modifier = Modifier.padding(12.dp)
+fun ProfileAvatar(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.size(112.dp)) {
+        Image(
+            imageVector = Icons.Filled.Person,
+            contentDescription = "Avatar du développeur",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(20.dp)
         )
-    }
-}
-
-@Composable
-fun ProfileActionButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text(text = text)
-    }
-}
-
-// 4. Previews
-@Preview(name = "AndroidJuniorProfilePreview", showBackground = true)
-@Composable
-fun AndroidJuniorProfilePreview() {
-    ProfilDeveloppeurComposeTheme {
-        Surface(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            DeveloperProfileCard(
-                name = "Romain Berry",
-                role = "Développeur Android junior",
-                description = "Je cherche un stage pour progresser en Kotlin, Compose et développement mobile Android.",
-                skills = listOf("• Kotlin", "• Compose", "• Git", "• Android Studio"),
-                contact = "Contact : romain.berry@example.com",
-                availability = "Disponible pour un stage",
-                actionText = "Contacter",
-                onCardClick = {},
-                onActionClick = {},
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Preview(name = "FullStackProfilePreview", showBackground = true)
-@Composable
-fun FullStackProfilePreview() {
-    ProfilDeveloppeurComposeTheme {
-        Surface(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            DeveloperProfileCard(
-                name = "Camille Leroy",
-                role = "Développeuse full-stack",
-                description = "Développeuse polyvalente, je travaille sur des applications web et mobiles avec une attention particulière à la qualité du code.",
-                skills = listOf("• Kotlin", "• JavaScript", "• Backend", "• Git"),
-                contact = "Contact : camille.leroy@example.com",
-                availability = "Disponible en freelance",
-                actionText = "Voir le portfolio",
-                onCardClick = {},
-                onActionClick = {},
-                modifier = Modifier.fillMaxWidth()
+        Surface(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onTertiary,
+            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Disponible",
+                modifier = Modifier
+                    .padding(6.dp)
+                    .size(18.dp)
             )
         }
     }
