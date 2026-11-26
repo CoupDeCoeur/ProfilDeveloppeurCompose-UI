@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         profile = sampleAndroidJuniorProfile(),
                         onContactClick = {
+                            // Plus tard : ouvrir l'application email
                         },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -94,6 +95,16 @@ fun ProfileScreen(
         }
         item {
             AboutSection(description = profile.description)
+        }
+        item {
+            SectionTitle(text = "Compétences")
+        }
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(profile.skills) { skill ->
+                    SkillCard(skill = skill)
+                }
+            }
         }
     }
 }
@@ -187,6 +198,26 @@ fun AboutSection(description: String, modifier: Modifier = Modifier) {
             Text(text = "À propos", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = description, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun SkillCard(skill: Skill, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        )
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Text(text = skill.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = skill.level,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
