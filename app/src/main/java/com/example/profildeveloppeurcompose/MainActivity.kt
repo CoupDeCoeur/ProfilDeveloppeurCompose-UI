@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         profile = sampleAndroidJuniorProfile(),
                         onContactClick = {
-                            // Plus tard : ouvrir l'application email
                         },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -71,6 +70,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun ProfileScreen(
@@ -92,8 +92,12 @@ fun ProfileScreen(
                 location = profile.location
             )
         }
+        item {
+            AboutSection(description = profile.description)
+        }
     }
 }
+
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
@@ -139,6 +143,7 @@ fun ProfileHeader(
         }
     }
 }
+
 @Composable
 fun ProfileAvatar(modifier: Modifier = Modifier) {
     Box(modifier = modifier.size(112.dp)) {
@@ -167,5 +172,43 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
                     .size(18.dp)
             )
         }
+    }
+}
+
+@Composable
+fun AboutSection(description: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "À propos", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = description, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Preview(name = "Profil - Thème clair", showBackground = true, heightDp = 1400)
+@Composable
+fun ProfileScreenLightPreview() {
+    ProfilDeveloppeurComposeTheme(darkTheme = false) {
+        ProfileScreen(
+            profile = sampleAndroidJuniorProfile(),
+            onContactClick = {}
+        )
+    }
+}
+
+@Preview(name = "Profil - Thème sombre", showBackground = true, heightDp = 1400)
+@Composable
+fun ProfileScreenDarkPreview() {
+    ProfilDeveloppeurComposeTheme(darkTheme = true) {
+        ProfileScreen(
+            profile = sampleAndroidJuniorProfile(),
+            onContactClick = {}
+        )
     }
 }

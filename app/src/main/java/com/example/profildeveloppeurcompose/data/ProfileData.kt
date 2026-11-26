@@ -30,8 +30,8 @@ fun sampleAndroidJuniorProfile(): DeveloperProfile {
         name = "Romain Berry",
         role = "Développeur Android junior",
         description = "Je cherche un stage pour progresser en Kotlin, Jetpack Compose et développement mobile Android. J'aime construire des interfaces claires et soignées.",
-        location = "Paris, France",
-        email = "romain.berry@example.com",
+        location = "Reims, France",
+        email = "romain.berry@myskolae.fr",
         availability = "Disponible pour un stage",
         isAvailable = true,
         skills = listOf(
