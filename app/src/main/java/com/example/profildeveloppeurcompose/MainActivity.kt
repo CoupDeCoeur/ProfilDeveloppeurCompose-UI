@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         profile = sampleAndroidJuniorProfile(),
                         onContactClick = {
-                            // Plus tard : ouvrir l'application email
                         },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -71,6 +70,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
 @Composable
@@ -105,6 +105,15 @@ fun ProfileScreen(
                     SkillCard(skill = skill)
                 }
             }
+        }
+        item {
+            SectionTitle(text = "Projets")
+        }
+        items(
+            items = profile.projects,
+            key = { project -> project.id }
+        ) { project ->
+            ProjectCard(project = project)
         }
     }
 }
@@ -221,6 +230,46 @@ fun SkillCard(skill: Skill, modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun ProjectCard(project: Project, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = project.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = project.year,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = project.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = project.technologies.joinToString(" • "),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+}
+
 
 @Preview(name = "Profil - Thème clair", showBackground = true, heightDp = 1400)
 @Composable
