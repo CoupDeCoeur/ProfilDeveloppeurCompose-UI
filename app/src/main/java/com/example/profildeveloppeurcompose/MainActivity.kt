@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         profile = sampleAndroidJuniorProfile(),
                         onContactClick = {
+                            // Plus tard : ouvrir l'application email
                         },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -70,7 +71,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 @Composable
@@ -115,9 +115,32 @@ fun ProfileScreen(
         ) { project ->
             ProjectCard(project = project)
         }
+        item {
+            SectionTitle(text = "Contact")
+        }
+        item {
+            ContactSection(
+                email = profile.email,
+                location = profile.location,
+                availability = profile.availability
+            )
+        }
+        item {
+            Button(
+                onClick = onContactClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Email,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Contacter")
+            }
+        }
     }
 }
-
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
@@ -268,6 +291,49 @@ fun ProjectCard(project: Project, modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+@Composable
+fun ContactSection(
+    email: String,
+    location: String,
+    availability: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ReadOnlyInfoField(label = "Email", value = email, icon = Icons.Filled.Email)
+            ReadOnlyInfoField(label = "Localisation", value = location, icon = Icons.Filled.LocationOn)
+            ReadOnlyInfoField(label = "Disponibilité", value = availability, icon = Icons.Filled.DateRange)
+        }
+    }
+}
+
+@Composable
+fun ReadOnlyInfoField(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = {},
+        readOnly = true,
+        singleLine = true,
+        label = { Text(text = label) },
+        leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 
